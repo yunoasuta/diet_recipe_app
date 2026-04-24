@@ -92,7 +92,7 @@ textarea{
                     {% endfor %}
                 </p>
                 <p>
-                    現在の画像: <img src="{{ url_for('mainapp.image_file',filename=recipi.image_path) }}" alt="画像" style="width:200px;">
+                    現在の画像: <img src="{{ recipi.image_path }}" alt="画像" style="width:200px;">
                 </p>
                 <p>
                     {{form.image.label}} (変更する場合のみ選択)

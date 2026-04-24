@@ -1,4 +1,15 @@
 from flask import Blueprint
+import cloudinary
+import cloudinary.uploader
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+cloudinary.config(
+    cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.environ.get("CLOUDINARY_API_KEY"),
+    api_secret=os.environ.get("CLOUDINARY_API_SECRET")
+)
 
 mainapp = Blueprint(
     'mainapp',
@@ -118,16 +129,44 @@ from apps.recipiapp import db
 from apps.mainapp import forms
 from apps.mainapp import models as modelrecipi
 
+# @mainapp.route('/upload',methods=['GET','POST'])
+# @login_required
+# def upload():
+#     form = forms.UploadImageForm()
+#     if form.validate_on_submit():
+#         file = form.image.data
+#         suffix = Path(file.filename).suffix
+#         imagefile_uuid = str(uuid.uuid4()) + suffix
+#         image_path = Path(current_app.config['UPLOAD_FOLDER']) / imagefile_uuid
+#         file.save(str(image_path))
+
+#         upload_data = modelrecipi.UserRecipi(
+#             username = current_user.username,
+#             title = form.title.data,
+#             material = form.material.data,
+#             how_to = form.how_to.data,
+#             p = int(form.p.data),
+#             f = int(form.f.data),
+#             c = int(form.c.data),
+#             kcal = int(form.kcal.data),
+#             url = form.url.data,
+#             image_path = imagefile_uuid
+#         )
+#         db.session.add(upload_data)
+#         db.session.commit()
+#         # return None
+#         return redirect(url_for('mainapp.index'))
+    
+#     return render_template('upload.html',form = form)
 @mainapp.route('/upload',methods=['GET','POST'])
 @login_required
 def upload():
     form = forms.UploadImageForm()
     if form.validate_on_submit():
         file = form.image.data
-        suffix = Path(file.filename).suffix
-        imagefile_uuid = str(uuid.uuid4()) + suffix
-        image_path = Path(current_app.config['UPLOAD_FOLDER']) / imagefile_uuid
-        file.save(str(image_path))
+        # Cloudinaryにアップロード
+        result = cloudinary.uploader.upload(file)
+        image_url = result['secure_url']  # CloudinaryのURLを取得
 
         upload_data = modelrecipi.UserRecipi(
             username = current_user.username,
@@ -139,14 +178,13 @@ def upload():
             c = int(form.c.data),
             kcal = int(form.kcal.data),
             url = form.url.data,
-            image_path = imagefile_uuid
+            image_path = image_url  # UUIDの代わりにURLを保存
         )
         db.session.add(upload_data)
         db.session.commit()
-        # return None
         return redirect(url_for('mainapp.index'))
     
-    return render_template('upload.html',form = form)
+    return render_template('upload.html',form=form)
 
 @mainapp.route('/edit/<int:id>',methods=['GET','POST'])
 @login_required
@@ -164,13 +202,19 @@ def edit(id):
         recipi.c = int(form.c.data)
         recipi.kcal = int(form.kcal.data)
         recipi.url = form.url.data
+        # if form.image.data:
+        #     file = form.image.data
+        #     suffix = Path(file.filename).suffix
+        #     imagefile_uuid = str(uuid.uuid4()) + suffix
+        #     image_path = Path(current_app.config['UPLOAD_FOLDER']) / imagefile_uuid
+        #     file.save(str(image_path))
+        #     recipi.image_path = imagefile_uuid
         if form.image.data:
             file = form.image.data
-            suffix = Path(file.filename).suffix
-            imagefile_uuid = str(uuid.uuid4()) + suffix
-            image_path = Path(current_app.config['UPLOAD_FOLDER']) / imagefile_uuid
-            file.save(str(image_path))
-            recipi.image_path = imagefile_uuid
+            # Cloudinaryにアップロード
+            result = cloudinary.uploader.upload(file)
+            image_url = result['secure_url']
+            recipi.image_path = image_url  # URLを保存
         db.session.commit()
         return redirect(url_for('mainapp.show_detail',id=id))
     elif request.method == 'GET':

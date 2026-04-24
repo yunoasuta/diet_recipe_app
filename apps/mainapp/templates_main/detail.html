@@ -14,7 +14,7 @@ h2{
 {% block contents %}
 <div class="detail_div">
 <h1>料理名：{{detail.title}}</h1>
-<img src="{{ url_for('mainapp.image_file',filename=detail.image_path) }}" alt="画像" style="width:40%; display:block; margin:0 auto;">
+<img src="{{ detail.image_path }}" alt="画像" style="width:40%; display:block; margin:0 auto;">
 <h3>P:{{detail.p}}g F:{{detail.f}}g C:{{detail.c}}g {{detail.kcal}}kcal</h3>
 <h2 >材料</h2>
 <p>{{detail.material}}</p>

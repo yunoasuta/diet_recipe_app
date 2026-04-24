@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Upload{% endblock %}
+{% block title %}Edit{% endblock %}
 {% block upload_css %}
 <style>
 .pad{
@@ -35,14 +35,11 @@ textarea{
 
 {% block contents %}
 <br>
-<!-- <div class="container">
-    <div class="row">
-        <div class="col offset-2"> -->
         <div class="pad">
-            <h2>投稿</h2>
-            <p>レシピを登録してください</p>
+            <h2>編集</h2>
+            <p>レシピを編集してください</p>
             <br>
-            <form action="{{url_for('mainapp.upload')}}" method="POST" enctype="multipart/form-data" novalidate="novalidate">
+            <form action="{{url_for('mainapp.edit',id=recipi.id)}}" method="POST" enctype="multipart/form-data" novalidate="novalidate">
                 {{form.csrf_token}}
                 <p>
                     {{form.title.label}}
@@ -95,6 +92,10 @@ textarea{
                     {% endfor %}
                 </p>
                 <p>
+                    現在の画像: <img src="{{ url_for('mainapp.image_file',filename=recipi.image_path) }}" alt="画像" style="width:200px;">
+                </p>
+                <p>
+                    {{form.image.label}} (変更する場合のみ選択)
                     {{form.image()}}
                     {% for error in form.image.errors %}
                     <span style="color:red">{{error}}</span>
@@ -104,9 +105,5 @@ textarea{
                     {{form.submit()}}
                 </p>
             </form>
-            <a href="{{url_for('mainapp.index')}}">投稿をやめる</a>
         </div>
-        <!-- </div>
-    </div>
-</div> -->
 {% endblock %}

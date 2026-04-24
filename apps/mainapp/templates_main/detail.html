@@ -15,12 +15,22 @@ h2{
 <div class="detail_div">
 <h1>料理名：{{detail.title}}</h1>
 <img src="{{ url_for('mainapp.image_file',filename=detail.image_path) }}" alt="画像" style="width:40%; display:block; margin:0 auto;">
+<h3>P:{{detail.p}}g F:{{detail.f}}g C:{{detail.c}}g {{detail.kcal}}kcal</h3>
 <h2 >材料</h2>
 <p>{{detail.material}}</p>
 <h2>作り方</h2>
 <p>{{detail.how_to}}</p>
 <h2>参照元url</h2>
+{% if detail.url %}
 <a href="{{detail.url}}" style="display:block;">{{detail.url}}</a>
+{% else %}
+<p>参照元なし</p>
+{% endif %}
+{% if is_owner %}
+<a href="{{url_for('mainapp.edit',id=detail.id)}}">
+    <button>編集</button>
+</a>
+{% endif %}
 <!-- <a href="{{ url_for('mainapp.index') }}">レシピ一覧へ戻る</a> -->
 </div>
 {% endblock %}

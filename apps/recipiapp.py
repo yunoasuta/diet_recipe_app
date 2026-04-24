@@ -13,7 +13,8 @@ Migrate(app,db)
 from flask_login import LoginManager,login_manager
 
 login_manager = LoginManager()
-login_manager.login_view = 'index'
+# login_manager.login_view = 'index'
+login_manager.login_view = 'authapp.index'
 login_manager.login_message = ''
 login_manager.init_app(app)
 

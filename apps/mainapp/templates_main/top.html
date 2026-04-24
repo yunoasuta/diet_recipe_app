@@ -9,6 +9,20 @@
     background: transparent;
     color: red;
   }
+  .plus_btn {
+    position: fixed;
+    color: black;
+    top: 70px;
+    right: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+  .plus_btn:hover {
+    transform: scale(1.1);
+  }
 </style>
 {% endblock %}
 
@@ -55,7 +69,22 @@
       </p>
       {% if flag%}
       <h1>"<span>{{ keyword }}</span>"の検索結果</h1>
+      <p><a href="{{url_for('mainapp.index')}}">トップへ戻る</a></p>
       {% endif %}
+<form method="GET">
+  <select name="sort">
+    <option value="">並び替えなし</option>
+    <option value="p_desc">P 多い順</option>
+    <option value="p_asc">P 少ない順</option>
+    <option value="f_desc">F 多い順</option>
+    <option value="f_asc">F 少ない順</option>
+    <option value="c_desc">C 多い順</option>
+    <option value="c_asc">C 少ない順</option>
+    <option value="kcal_desc">カロリー 多い順</option>
+    <option value="kcal_asc">カロリー 少ない順</option>
+  </select>
+  <button type="submit">並び替え</button>
+</form>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
 
@@ -73,16 +102,16 @@
             <rect width="100%" height="100%" fill="#55595c"/>
             <div class="card-body">
               <p class="card-text">{{recipi.title}}</p>
-              <p class="card-text">P:{{recipi.p}} F:{{recipi.f}} C:{{recipi.c}} {{recipi.kcal}}</p>
+              <p class="card-text">P:{{recipi.p}}g F:{{recipi.f}}g C:{{recipi.c}}g {{recipi.kcal}}kcal</p>
               <p style="padding-left: 90%;">
                 {% if like_id_dict[recipi.id] %}
-                <button class="heart_btn" id="heart_t{{ recipi.id }}" onclick="like(this.id)">
+                <button class="heart_btn" id="t_heart{{ recipi.id }}" onclick="like(this.id)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16" id="heart_svg{{ recipi.id }}">
                     <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                   </svg>
                 </button>
                 {% else %}
-                <button class="heart_btn" id="heart_f{{ recipi.id }}" onclick="like(this.id)">
+                <button class="heart_btn" id="f_heart{{ recipi.id }}" onclick="like(this.id)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16" id="heart_svg{{ recipi.id }}">
                     <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
                   </svg>
@@ -114,16 +143,26 @@
       </div>
     </div>
   </div>
+
+  <!-- プラスボタン（レシピ投稿） -->
+  <a href="{{url_for('mainapp.upload')}}" class="plus_btn">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+    </svg>
+  </a>
+
   <script>
 
   let click_heart_num_list = [];
   function like(id){
-    const recipi_id = id.substr(-1);
+    // const recipi_id = id.substr(-1);
+    const recipi_id = id.replace(/[^0-9]/g, '');//resipi_idをidから抜き取る
     if (!(recipi_id in click_heart_num_list)){
       click_heart_num_list[recipi_id] = 0;
     }
-    let like_true_or_false = id.slice(-2,-1);
-
+    let like_true_or_false = id.slice(0,1);
+    console.log(like_true_or_false);
     if(click_heart_num_list[recipi_id] == 0){
       if(like_true_or_false == 't'){
           click_heart_num_list[recipi_id] = 1;

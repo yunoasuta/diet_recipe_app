@@ -18,7 +18,33 @@ def index():
     flag = False
     keyword = None
     #レシピデータベースに入っている全ての情報を取得
-    stmt = select(modelrecipi.UserRecipi).order_by(modelrecipi.UserRecipi.create_at.desc())
+    sort = request.args.get("sort")
+    stmt = select(modelrecipi.UserRecipi)
+
+    if sort == "p_desc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.p.desc())
+    elif sort == "p_asc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.p.asc())
+
+    elif sort == "f_desc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.f.desc())
+    elif sort == "f_asc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.f.asc())
+
+    elif sort == "c_desc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.c.desc())
+    elif sort == "c_asc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.c.asc())
+
+    elif sort == "kcal_desc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.kcal.desc())
+    elif sort == "kcal_asc":
+        stmt = stmt.order_by(modelrecipi.UserRecipi.kcal.asc())
+
+    else:
+    # デフォルト（新しい順）
+        stmt = stmt.order_by(modelrecipi.UserRecipi.create_at.desc())
+    # stmt = select(modelrecipi.UserRecipi).order_by(modelrecipi.UserRecipi.create_at.desc())
     entries = db.session.execute(stmt).scalars().all()
     print(entries)
     page = request.args.get(get_page_parameter(),type=int,default=1)
@@ -33,6 +59,7 @@ def index():
     user_id = current_user.id
     like_recipi_id_list = []
     stmt = select(modelrecipi.LikeRecipi).filter_by(user_id=user_id)
+    
     user_like_list = db.session.execute(stmt).scalars().all()
 
     #いいねしたレシピのidをリストにまとめる
@@ -99,18 +126,18 @@ def upload():
         file = form.image.data
         suffix = Path(file.filename).suffix
         imagefile_uuid = str(uuid.uuid4()) + suffix
-        image_path = Path(current_app.config['UPLOAD_FOLDER'],imagefile_uuid)
-        file.save(image_path)
+        image_path = Path(current_app.config['UPLOAD_FOLDER']) / imagefile_uuid
+        file.save(str(image_path))
 
         upload_data = modelrecipi.UserRecipi(
             username = current_user.username,
             title = form.title.data,
             material = form.material.data,
             how_to = form.how_to.data,
-            p = form.p.data,
-            f = form.f.data,
-            c = form.c.data,
-            kcal = form.kcal.data,
+            p = int(form.p.data),
+            f = int(form.f.data),
+            c = int(form.c.data),
+            kcal = int(form.kcal.data),
             url = form.url.data,
             image_path = imagefile_uuid
         )
@@ -121,12 +148,49 @@ def upload():
     
     return render_template('upload.html',form = form)
 
+@mainapp.route('/edit/<int:id>',methods=['GET','POST'])
+@login_required
+def edit(id):
+    recipi = db.session.get(modelrecipi.UserRecipi,id)
+    if recipi is None or recipi.username != current_user.username:
+        return redirect(url_for('mainapp.index'))
+    form = forms.EditForm()
+    if form.validate_on_submit():
+        recipi.title = form.title.data
+        recipi.material = form.material.data
+        recipi.how_to = form.how_to.data
+        recipi.p = int(form.p.data)
+        recipi.f = int(form.f.data)
+        recipi.c = int(form.c.data)
+        recipi.kcal = int(form.kcal.data)
+        recipi.url = form.url.data
+        if form.image.data:
+            file = form.image.data
+            suffix = Path(file.filename).suffix
+            imagefile_uuid = str(uuid.uuid4()) + suffix
+            image_path = Path(current_app.config['UPLOAD_FOLDER']) / imagefile_uuid
+            file.save(str(image_path))
+            recipi.image_path = imagefile_uuid
+        db.session.commit()
+        return redirect(url_for('mainapp.show_detail',id=id))
+    elif request.method == 'GET':
+        form.title.data = recipi.title
+        form.material.data = recipi.material
+        form.how_to.data = recipi.how_to
+        form.p.data = recipi.p
+        form.f.data = recipi.f
+        form.c.data = recipi.c
+        form.kcal.data = recipi.kcal
+        form.url.data = recipi.url
+    return render_template('edit.html',form=form, recipi=recipi)
+
 @mainapp.route('/detail/<int:id>')
 @login_required
 def show_detail(id):
     detail = db.session.get(modelrecipi.UserRecipi,id)
     print(detail)
-    return render_template('detail.html',detail=detail)
+    is_owner = detail.username == current_user.username
+    return render_template('detail.html',detail=detail, is_owner=is_owner)
 
 # from apps import models as user_model
 

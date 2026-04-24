@@ -37,7 +37,7 @@
         <td>{{recipi.c}}</td>
         <td>{{recipi.kcal}}</td>
         <td>{{recipi.create_at}}</td>
-        <td><a href="{{url_for('mainapp.delete_recipi',id=recipi.id)}}">削除</a></td>
+        <td><a href="{{url_for('mainapp.edit',id=recipi.id)}}">編集</a> | <a href="{{url_for('mainapp.delete_recipi',id=recipi.id)}}">削除</a></td>
     </tr>
 {% endfor %}
 </table>

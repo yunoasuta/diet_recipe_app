@@ -3,13 +3,11 @@
 {% block title %}Fittness_Recipi{% endblock %}
 {% block mypage_css %}
 <style>
-/* .delete_btn{ */
-  /* padding-bottom: 5%; */
-  /* padding-top: 5%; */
-  /* background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important; */
-/* } */
-
-
+.delete_btn {
+  position: relative;
+  top: -30px;
+  margin-bottom: 20px;
+}
 </style>
 {% endblock %}
 
@@ -44,6 +42,9 @@
                 <div class="btn-group">
                   <a href="{{url_for('mainapp.show_detail',id=recipi.id)}}">
                     <button type="button" class="btn btn-sm btn-outline-secondary">詳細</button>
+                  </a>
+                  <a href="{{url_for('mainapp.edit',id=recipi.id)}}">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">編集</button>
                   </a>
                   <!-- <button type="button" class="btn btn-sm btn-outline-secondary">マイリストに追加</button> -->
                 </div>

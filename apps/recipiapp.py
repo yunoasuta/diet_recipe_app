@@ -40,7 +40,10 @@ def index():
         return redirect(url_for('index'))
     stmt = select(modelrecipi.UserRecipi)
     entry = db.session.execute(stmt).scalars().all()
-    res = random.sample(entry,3)
+    if len(entry) >= 3:
+        res = random.sample(entry, 3)
+    else:
+        res = entry
     # return render_template('index.html',form=form,user_recipes=entry)
     return render_template('index.html',form=form,user_recipes=res)
 

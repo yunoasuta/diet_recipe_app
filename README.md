@@ -1,1 +1,2 @@
-# new_fitness_recipi
+# diet_recipe_app
+筋トレ、ダイエット用レシピアプリです。

@@ -8,7 +8,7 @@ class UserRecipi(db.Model):
 
     id = db.Column(db.Integer,primary_key=True,autoincrement=True)
     # user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
-    username = db.Column(db.String(index=True))
+    username = db.Column(db.String,index=True)
     title = db.Column(db.String(50),nullable=False)
     create_at = db.Column(db.DateTime,default=datetime.now)
     image_path = db.Column(db.String)

@@ -10,7 +10,7 @@ class CustomFloatField(FloatField):
 
 class UploadImageForm(FlaskForm):
     title = StringField("料理名",validators=[validators.DataRequired(message="入力ミス"),
-                        validators.length(max=200,message="200文字以内で入力して下さい")])
+                        validators.length(max=30,message="30文字以内で入力して下さい")])
     material = TextAreaField("材料")
     how_to = TextAreaField("作り方")
     p = CustomFloatField("p",validators=[validators.DataRequired(message="入力ミス"),
@@ -28,7 +28,7 @@ class UploadImageForm(FlaskForm):
 
 class EditForm(FlaskForm):
     title = StringField("料理名",validators=[validators.DataRequired(message="入力ミス"),
-                        validators.length(max=200,message="200文字以内で入力して下さい")])
+                        validators.length(max=30,message="30文字以内で入力して下さい")])
     material = TextAreaField("材料")
     how_to = TextAreaField("作り方")
     p = CustomFloatField("p",validators=[validators.DataRequired(message="入力ミス"),
